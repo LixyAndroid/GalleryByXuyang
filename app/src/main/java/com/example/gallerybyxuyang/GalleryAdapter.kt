@@ -15,6 +15,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.gallery_cell.view.*
+import java.util.ArrayList
 
 /**
  * @author Li Xuyang
@@ -31,9 +32,12 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
         )
         holder.itemView.setOnClickListener {
             Bundle().apply {
-                putParcelable("PHOTO", getItem(holder.adapterPosition))
-                holder.itemView.findNavController()
-                    .navigate(R.id.action_galleryFragment_to_photoFragment, this)
+                putParcelableArrayList("PHOTO_LIST", ArrayList(currentList))
+
+                putInt("PHOTO_POSITION",holder.adapterPosition)
+
+                holder.itemView.findNavController().navigate(R.id.action_galleryFragment_to_pagerPhotoFragment,this)
+
             }
         }
 
@@ -46,9 +50,13 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
             setShimmerAngle(0)
             startShimmerAnimation()
         }
+
+        holder.itemView.imageView.layoutParams.height = getItem(position).photoHeight
+
+
         Glide.with(holder.itemView)
             .load(getItem(position).previewUrl)
-            .placeholder(R.drawable.ic_photo_gray_24dp)
+            .placeholder(R.drawable.photo_placeholder)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     e: GlideException?,
