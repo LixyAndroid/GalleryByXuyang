@@ -34,9 +34,10 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
             Bundle().apply {
                 putParcelableArrayList("PHOTO_LIST", ArrayList(currentList))
 
-                putInt("PHOTO_POSITION",holder.adapterPosition)
+                putInt("PHOTO_POSITION", holder.adapterPosition)
 
-                holder.itemView.findNavController().navigate(R.id.action_galleryFragment_to_pagerPhotoFragment,this)
+                holder.itemView.findNavController()
+                    .navigate(R.id.action_galleryFragment_to_pagerPhotoFragment, this)
 
             }
         }
@@ -45,15 +46,20 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.itemView.shimmerLayoutCell.apply {
-            setShimmerColor(0x55FFFFFF)
-            setShimmerAngle(0)
-            startShimmerAnimation()
+
+
+        val photoItem = getItem(position)
+        with(holder.itemView) {
+            shimmerLayoutCell.apply {
+                setShimmerColor(0x55FFFFFF)
+                setShimmerAngle(0)
+                startShimmerAnimation()
+            }
+            textViewUser.text = photoItem.photoUser
+            textViewLikes.text = photoItem.photoLikes.toString()
+            textViewFavorites.text = photoItem.photoFavorites.toString()
+            imageView.layoutParams.height = photoItem.photoHeight
         }
-
-        holder.itemView.imageView.layoutParams.height = getItem(position).photoHeight
-
-
         Glide.with(holder.itemView)
             .load(getItem(position).previewUrl)
             .placeholder(R.drawable.photo_placeholder)
@@ -74,12 +80,12 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    //also 表示同时
                     return false.also { holder.itemView.shimmerLayoutCell?.stopShimmerAnimation() }
                 }
 
             })
             .into(holder.itemView.imageView)
+
 
     }
 
